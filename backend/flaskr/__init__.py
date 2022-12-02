@@ -125,15 +125,22 @@ def create_app(test_config=None):
     @app.route("/questions/<question_id>", methods=['DELETE'])
     def delete_question(question_id):
         try:
-            question = Question.query.get(question_id)
+            question = Question.query.filter_by(id=id).one_or_none
+            if question is None:
+                abort(404)
+
             question.delete()
+
+            selection = Question.query.order_by(Question.id).all
+            currentQuestions = paginate_questions(request, selection)
             return jsonify({
                 'success': True,
                 'deleted': question_id
             })
-        except:
-            abort(422)
-
+        except Exception as e:
+            print(e)
+            abort(404)
+    
 
     """
     @TODO:

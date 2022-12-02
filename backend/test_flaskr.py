@@ -2,6 +2,8 @@ import os
 import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
+from DB_settings import DB_TEST_NAME, DB_TEST_USER
+
 
 from flaskr import create_app
 from models import setup_db, Question, Category
@@ -14,8 +16,8 @@ class TriviaTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_name = "triviatest"
-        self.database_path = 'postgresql://postgres:jaybabson@localhost:5432/triviatest'
+        self.database_name = DB_TEST_NAME
+        self.database_path = "postgresql://{}@{}/{}".format(DB_TEST_USER,'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
@@ -174,7 +176,7 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 400)
         self.assertEqual(data['success'], False)
-        self.assertEqual(data['message'], "resource not found")
+        self.assertEqual(data['message'], "bad request")
 
     # Test 12: get quiz by category or all questions
     def test_get_quiz_by_category_or_all(self):
